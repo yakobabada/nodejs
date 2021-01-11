@@ -17,8 +17,11 @@ const getProductsFromFile = cb => {
   });
 };
 
+const getRandomInt = max => Math.floor(Math.random() * Math.floor(max));
+
 module.exports = class Product {
   constructor(title, imageUrl, description, price) {
+    this.id = getRandomInt(1000000);
     this.title = title;
     this.imageUrl = imageUrl;
     this.description = description;
@@ -36,5 +39,16 @@ module.exports = class Product {
 
   static fetchAll(cb) {
     getProductsFromFile(cb);
+  }
+
+  static fetch(id , cb) {
+    fs.readFile(p, (err, fileContent) => {
+      if (err) {
+        cb(null)
+      } else {
+        const products = JSON.parse(fileContent);
+        cb(products.filter(product => product.id == id)[0]);
+      }
+    });
   }
 };
