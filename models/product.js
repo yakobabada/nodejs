@@ -1,27 +1,9 @@
-const fs = require('fs');
-const path = require('path');
-
-const p = path.join(
-  path.dirname(process.mainModule.filename),
-  'data',
-  'products.json'
-);
-
-const getProductsFromFile = cb => {
-  fs.readFile(p, (err, fileContent) => {
-    if (err) {
-      cb([]);
-    } else {
-      cb(JSON.parse(fileContent));
-    }
-  });
-};
+const DbConnection = require('../util/database');
 
 const getRandomInt = max => Math.floor(Math.random() * Math.floor(max));
 
 module.exports = class Product {
   constructor(title, imageUrl, description, price) {
-    this.id = getRandomInt(1000000);
     this.title = title;
     this.imageUrl = imageUrl;
     this.description = description;
@@ -29,16 +11,14 @@ module.exports = class Product {
   }
 
   save() {
-    getProductsFromFile(products => {
-      products.push(this);
-      fs.writeFile(p, JSON.stringify(products), err => {
-        console.log(err);
-      });
-    });
+    return DbConnection.execute(
+      "INSERT INTO product (title, image_url, description, price) VALUES (?, ?, ?, ?)",
+      [this.title, this.imageUrl, this.description, this.price]
+    );
   }
 
-  static fetchAll(cb) {
-    getProductsFromFile(cb);
+  static fetchAll() {
+    return DbConnection.promise().query("SELECT * FROM product");
   }
 
   static fetch(id , cb) {
