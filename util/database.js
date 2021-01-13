@@ -1,9 +1,10 @@
-const mysql = require('mysql2');
+const Sequelize = require('sequelize');
 
-// create the connection to database
-module.exports = mysql.createConnection({
+module.exports = new Sequelize('shop', 'root', 'root', {
   host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'shop'
+  dialect: 'mysql',
+  underscored: true,
+  define: {
+    freezeTableName: true
+  }
 });
